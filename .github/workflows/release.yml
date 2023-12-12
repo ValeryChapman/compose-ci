@@ -1,0 +1,29 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: [ubuntu-latest]
+    if: "contains(github.event.head_commit.message, '~deploy~')"
+    steps:
+      - name: Check out the repository
+        # https://github.com/actions/checkout
+        uses: actions/checkout@v3
+
+      - name: Install Docker Compose
+        shell: bash
+        run: |
+          DOWNLOAD_URL="https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-x86_64"
+          
+          echo "Download Compose v2.23.0 from ${DOWNLOAD_URL}"
+  
+          mkdir -p ~/.docker/cli-plugins/
+          curl -SL "$DOWNLOAD_URL" -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          
+          docker compose version
